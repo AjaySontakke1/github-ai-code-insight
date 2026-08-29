@@ -1,5 +1,6 @@
 package com.ajay.githubaicodeinsight.service;
 
+import com.ajay.githubaicodeinsight.dto.FileContentResponse;
 import com.ajay.githubaicodeinsight.dto.RepositoryDto;
 import com.ajay.githubaicodeinsight.dto.RepositoryPageResponse;
 import com.ajay.githubaicodeinsight.dto.RepositoryTreeResponse;
@@ -7,6 +8,8 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.List;
 
 @Service
@@ -76,5 +79,31 @@ public class GitHubRepositoryService {
                 .header("Authorization", "Bearer " + accessToken)
                 .retrieve()
                 .body(RepositoryDto.class);
+    }
+
+    public String getFileContent(
+            String accessToken,
+            String owner,
+            String repo,
+            String path) {
+
+        String uri = "https://api.github.com/repos/"
+                + owner + "/"
+                + repo + "/contents/"
+                + path;
+
+        FileContentResponse response = restClient.get()
+                .uri(uri)
+                .header("Authorization", "Bearer " + accessToken)
+                .retrieve()
+                .body(FileContentResponse.class);
+
+        byte[] decodedBytes = Base64.getDecoder()
+                .decode(response.getContent().replace("\n", ""));
+
+        return new String(
+                decodedBytes,
+                StandardCharsets.UTF_8
+        );
     }
 }

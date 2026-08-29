@@ -56,4 +56,23 @@ public class RepositoryController {
                 repository.getDefaultBranch()
         );
     }
+
+    @GetMapping("/api/github/repository/{owner}/{repo}/file")
+    public String getFileContent(
+            @PathVariable String owner,
+            @PathVariable String repo,
+            @RequestParam String path,
+            @RegisteredOAuth2AuthorizedClient("github") OAuth2AuthorizedClient authorizedClient) {
+
+        String accessToken = authorizedClient
+                .getAccessToken()
+                .getTokenValue();
+
+        return gitHubRepositoryService.getFileContent(
+                accessToken,
+                owner,
+                repo,
+                path
+        );
+    }
 }
