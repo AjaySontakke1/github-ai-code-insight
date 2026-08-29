@@ -1,6 +1,7 @@
 package com.ajay.githubaicodeinsight.service;
 
 import com.ajay.githubaicodeinsight.dto.RepositoryDto;
+import com.ajay.githubaicodeinsight.dto.RepositoryPageResponse;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
@@ -16,11 +17,10 @@ public class GitHubRepositoryService {
         this.restClient = restClientBuilder.build();
     }
 
-    public List<RepositoryDto> getRepositories(
+    public RepositoryPageResponse getRepositories(
             String accessToken,
             int page,
-            int size,
-            String search) {
+            int size) {
 
         String uri = "https://api.github.com/user/repos"
                 + "?page=" + page
@@ -33,16 +33,13 @@ public class GitHubRepositoryService {
                 .retrieve()
                 .body(new ParameterizedTypeReference<List<RepositoryDto>>() {});
 
-        if (search == null || search.isBlank()) {
-            return repositories;
-        }
+        boolean hasNext = repositories.size() == size;
 
-        return repositories.stream()
-                .filter(repo ->
-                        repo.getName()
-                                .toLowerCase()
-                                .contains(search.toLowerCase())
-                )
-                .toList();
+        return new RepositoryPageResponse(
+                repositories,
+                page,
+                size,
+                hasNext
+        );
     }
 }
