@@ -16,11 +16,33 @@ public class GitHubRepositoryService {
         this.restClient = restClientBuilder.build();
     }
 
-    public List<RepositoryDto> getRepositories(String accessToken) {
-        return restClient.get()
-                .uri("https://api.github.com/user/repos")
+    public List<RepositoryDto> getRepositories(
+            String accessToken,
+            int page,
+            int size,
+            String search) {
+
+        String uri = "https://api.github.com/user/repos"
+                + "?page=" + page
+                + "&per_page=" + size
+                + "&sort=updated";
+
+        List<RepositoryDto> repositories = restClient.get()
+                .uri(uri)
                 .header("Authorization", "Bearer " + accessToken)
                 .retrieve()
                 .body(new ParameterizedTypeReference<List<RepositoryDto>>() {});
+
+        if (search == null || search.isBlank()) {
+            return repositories;
+        }
+
+        return repositories.stream()
+                .filter(repo ->
+                        repo.getName()
+                                .toLowerCase()
+                                .contains(search.toLowerCase())
+                )
+                .toList();
     }
 }
