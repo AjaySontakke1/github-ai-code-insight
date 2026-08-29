@@ -1,10 +1,12 @@
 package com.ajay.githubaicodeinsight.controller;
 
 import com.ajay.githubaicodeinsight.dto.RepositoryPageResponse;
+import com.ajay.githubaicodeinsight.dto.RepositoryTreeResponse;
 import com.ajay.githubaicodeinsight.service.GitHubRepositoryService;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.annotation.RegisteredOAuth2AuthorizedClient;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,5 +30,23 @@ public class RepositoryController {
                 .getTokenValue();
 
         return gitHubRepositoryService.getRepositories(accessToken, page, size);
+    }
+
+    @GetMapping("/api/github/repository/{owner}/{repo}/files")
+    public RepositoryTreeResponse getRepositoryFiles(
+            @PathVariable String owner,
+            @PathVariable String repo,
+            @RegisteredOAuth2AuthorizedClient("github") OAuth2AuthorizedClient authorizedClient) {
+
+        String accessToken = authorizedClient
+                .getAccessToken()
+                .getTokenValue();
+
+        return gitHubRepositoryService.getRepositoryTree(
+                accessToken,
+                owner,
+                repo,
+                "main"
+        );
     }
 }

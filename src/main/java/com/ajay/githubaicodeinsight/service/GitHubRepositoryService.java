@@ -2,6 +2,7 @@ package com.ajay.githubaicodeinsight.service;
 
 import com.ajay.githubaicodeinsight.dto.RepositoryDto;
 import com.ajay.githubaicodeinsight.dto.RepositoryPageResponse;
+import com.ajay.githubaicodeinsight.dto.RepositoryTreeResponse;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
@@ -41,5 +42,24 @@ public class GitHubRepositoryService {
                 size,
                 hasNext
         );
+    }
+
+    public RepositoryTreeResponse getRepositoryTree(
+            String accessToken,
+            String owner,
+            String repo,
+            String branch) {
+
+        String uri = "https://api.github.com/repos/"
+                + owner + "/"
+                + repo + "/git/trees/"
+                + branch
+                + "?recursive=1";
+
+        return restClient.get()
+                .uri(uri)
+                .header("Authorization", "Bearer " + accessToken)
+                .retrieve()
+                .body(RepositoryTreeResponse.class);
     }
 }

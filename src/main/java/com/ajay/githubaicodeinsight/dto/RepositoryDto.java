@@ -32,6 +32,10 @@ public class RepositoryDto {
     @JsonAlias("html_url")
     private String url;
 
+    @JsonProperty("defaultBranch")
+    @JsonAlias("default_branch")
+    private String defaultBranch;
+
     public RepositoryDto() {
     }
 
@@ -69,5 +73,9 @@ public class RepositoryDto {
 
     public String getUrl() {
         return url;
+    }
+
+    public String getDefaultBranch() {
+        return defaultBranch;
     }
 }
