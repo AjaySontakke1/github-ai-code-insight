@@ -1,5 +1,6 @@
 package com.ajay.githubaicodeinsight.controller;
 
+import com.ajay.githubaicodeinsight.dto.RepositoryDto;
 import com.ajay.githubaicodeinsight.dto.RepositoryPageResponse;
 import com.ajay.githubaicodeinsight.dto.RepositoryTreeResponse;
 import com.ajay.githubaicodeinsight.service.GitHubRepositoryService;
@@ -42,11 +43,17 @@ public class RepositoryController {
                 .getAccessToken()
                 .getTokenValue();
 
+        RepositoryDto repository = gitHubRepositoryService.getRepository(
+                accessToken,
+                owner,
+                repo
+        );
+
         return gitHubRepositoryService.getRepositoryTree(
                 accessToken,
                 owner,
                 repo,
-                "main"
+                repository.getDefaultBranch()
         );
     }
 }

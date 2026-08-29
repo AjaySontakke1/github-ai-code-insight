@@ -62,4 +62,19 @@ public class GitHubRepositoryService {
                 .retrieve()
                 .body(RepositoryTreeResponse.class);
     }
+
+    public RepositoryDto getRepository(
+            String accessToken,
+            String owner,
+            String repo) {
+
+        String uri = "https://api.github.com/repos/"
+                + owner + "/" + repo;
+
+        return restClient.get()
+                .uri(uri)
+                .header("Authorization", "Bearer " + accessToken)
+                .retrieve()
+                .body(RepositoryDto.class);
+    }
 }
