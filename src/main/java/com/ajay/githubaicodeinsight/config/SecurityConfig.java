@@ -13,8 +13,10 @@ public class SecurityConfig {
             throws Exception {
 
         http
+            .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**", "/mcp/**"))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/api/health").permitAll()
+                .requestMatchers("/", "/api/health", "/api/ai/analyze").permitAll()
+                .requestMatchers("/mcp/**").authenticated()
                 .anyRequest().authenticated()
             )
             .oauth2Login(oauth2 -> {}); // Note: http.oauth2Login() is deprecated in newer Spring Security, using recommended lambda DSL style
