@@ -22,8 +22,12 @@ public class SecurityConfig {
             .cors(Customizer.withDefaults())
             .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**", "/mcp/**"))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/api/health", "/api/ai/analyze").permitAll()
-                .requestMatchers("/mcp/**").authenticated()
+                .requestMatchers("/", "/login/**", "/api/health").permitAll()
+                .requestMatchers(
+                    "/api/github/**",
+                    "/api/ai/**",
+                    "/mcp/**"
+                ).authenticated()
                 .anyRequest().authenticated()
             )
             .oauth2Login(oauth2 -> {});
@@ -34,7 +38,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:3000", "http://127.0.0.1:5173"));
+        configuration.setAllowedOrigins(List.of("http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:3000"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
