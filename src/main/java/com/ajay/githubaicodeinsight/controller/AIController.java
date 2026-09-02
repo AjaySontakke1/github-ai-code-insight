@@ -83,11 +83,7 @@ public class AIController {
                 authentication.getName()
         );
     }
-    @GetMapping("/api/ai/test")
-    public String testAI() {
-        return aiAnalysisService.testAI();
-    }
-    
+
     @GetMapping("/api/ai/history")
     public List<AnalysisJob> getHistory() {
 
