@@ -3,7 +3,7 @@ import RepositoryAnalysis from './pages/RepositoryAnalysis'
 
 function App() {
   return (
-    <div style={{ fontFamily: 'sans-serif', padding: '2rem' }}>
+    <div className="app-container">
       <RepositoryAnalysis />
     </div>
   )
