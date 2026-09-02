@@ -175,16 +175,31 @@ function RepositoryAnalysis() {
                             <strong>Status:</strong> {job.status}
                         </p>
 
-                        {job.status === "ANALYZING" && (
-                            <p>⏳ AI is analyzing the repository...</p>
-                        )}
-
                         {job.status === "FAILED" && (
                             <p className="error-message">
                                 Analysis failed: {job.error}
                             </p>
                         )}
                     </div>
+
+                    {job.status === "STARTED" && (
+                        <div className="progress-box">
+                            <h2>Preparing Analysis</h2>
+                            <p>Preparing your repository for AI analysis...</p>
+                        </div>
+                    )}
+
+                    {job.status === "ANALYZING" && (
+                        <div className="progress-box">
+                            <h2>Analysis in Progress</h2>
+                            <div className="progress-spinner"></div>
+                            <p>AI is reviewing your repository...</p>
+                            <p>This may take a few moments.</p>
+                            <div className="progress-bar-container">
+                                <div className="progress-bar"></div>
+                            </div>
+                        </div>
+                    )}
 
                     {job.status === "COMPLETED" && result && (
                         <div>
