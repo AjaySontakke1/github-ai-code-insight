@@ -287,106 +287,80 @@ public class AIAnalysisService {
         return response.trim();
     }
 
-    private String buildAnalysisPrompt(List<CodeFile> sourceFiles) {
+    private String buildAnalysisPrompt(List<CodeFile> files) {
 
         StringBuilder prompt = new StringBuilder();
 
         prompt.append("""
-                You are an experienced software engineer performing a careful
-                code review.
+                You are an expert software code reviewer.
 
-                Analyze ONLY the source code provided below.
+                Analyze the following source code carefully.
 
-                Find genuine issues in these categories:
+                Your job is to identify REAL and IMPORTANT problems only.
+
+                Analyze these categories:
 
                 1. BUG
-                   - Logic errors
-                   - Null pointer risks
-                   - Incorrect conditions
-                   - Exception handling problems
-                   - Resource handling problems
-
                 2. SECURITY
-                   - Hardcoded secrets
-                   - Authentication problems
-                   - Authorization problems
-                   - Unsafe input handling
-                   - Sensitive data exposure
-                   - Injection vulnerabilities
-
                 3. PERFORMANCE
-                   - Unnecessary loops
-                   - Repeated database/API calls
-                   - Inefficient data processing
-                   - Clearly avoidable expensive operations
-
                 4. CODE_QUALITY
-                   - Duplicate code
-                   - Very large methods
-                   - Poor maintainability
-                   - Poor naming
-                   - Unnecessary complexity
 
-                For every genuine issue return:
+                Rules:
 
-                - file: exact file path
-                - line: approximate line number, or 0 if uncertain
-                - severity: LOW, MEDIUM, HIGH, or CRITICAL
-                - category: BUG, SECURITY, PERFORMANCE, or CODE_QUALITY
-                - confidence: LOW, MEDIUM, or HIGH
-                - problem: explain what is wrong in simple language
-                - suggestion: explain how a developer could improve it
-
-                Important rules:
-
-                - Analyze only the provided code.
-                - Do not invent vulnerabilities.
-                - Do not report something merely because it could theoretically
-                  be improved.
-                - Do not modify the source code.
-                - Do not include compliments or general comments.
-                - Report only meaningful issues.
-                - If there are no genuine issues, return an empty issues array.
-                - Use line 0 when you cannot confidently determine the line.
-                - Set confidence to HIGH only when the provided code clearly supports the finding.
-                - Use MEDIUM when the finding is likely but some context is missing.
-                - Use LOW when the finding is only a possible concern.
+                - Analyze ONLY the code provided below.
+                - Do not invent files, classes, methods, or problems.
+                - Do not report something merely because it could theoretically be improved.
+                - Report a problem only when there is reasonable evidence in the code.
+                - Give the exact file path.
+                - Give the approximate line number where the problem occurs.
+                - Give severity as CRITICAL, HIGH, MEDIUM, or LOW.
+                - Give confidence as HIGH, MEDIUM, or LOW.
+                - Keep the problem explanation simple and specific.
+                - Give a practical suggestion to fix the problem.
+                - If there are no issues, return an empty issues array.
                 - Return ONLY valid JSON.
-                - Do not use Markdown.
-                - Do not put the JSON inside ```.
+                - Do NOT use Markdown.
+                - Do NOT wrap the JSON inside ```json.
 
-                The score should be between 0 and 100.
-                100 means no significant issues were found.
-                Lower scores should reflect the number and severity of issues.
-
-                Return exactly this JSON structure:
+                JSON format:
 
                 {
-                  "repository": "repository-name",
-                  "score": 85,
+                  "repository": "repository name",
+                  "score": 0,
                   "issues": [
                     {
-                      "file": "src/example/UserService.java",
-                      "line": 42,
+                      "file": "src/example.java",
+                      "line": 10,
                       "severity": "HIGH",
                       "category": "SECURITY",
                       "confidence": "HIGH",
-                      "problem": "Explain the actual problem here.",
-                      "suggestion": "Explain what the developer should consider changing."
+                      "problem": "Short explanation of the problem",
+                      "suggestion": "Practical suggestion to fix it"
                     }
-                  ]
+                  ],
+                  "bugs": 0,
+                  "security": 0,
+                  "performance": 0,
+                  "codeQuality": 0
                 }
 
-                Source code:
+                Important:
+                The score will be calculated by the application.
+                Do not try to calculate the final score yourself.
+
+                Code to analyze:
+
                 """);
 
-        for (CodeFile file : sourceFiles) {
+        for (CodeFile file : files) {
 
-            prompt.append("\n\n--- FILE: ")
+            prompt.append("\n--- FILE: ")
                     .append(file.getPath())
                     .append(" ---\n");
 
             prompt.append(file.getContent());
+
+            prompt.append("\n--- END FILE ---\n");
         }
 
         return prompt.toString();
