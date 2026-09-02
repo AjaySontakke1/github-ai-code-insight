@@ -3,7 +3,8 @@ import {
     startAnalysis,
     getAnalysis,
     getRepositories,
-    getCurrentUser
+    getCurrentUser,
+    logout
 } from "../services/analysisService";
 import "./RepositoryAnalysis.css";
 
@@ -17,6 +18,7 @@ function RepositoryAnalysis() {
     const [loading, setLoading] = useState(false);
     const [job, setJob] = useState(null);
     const [error, setError] = useState("");
+    const [issueFilter, setIssueFilter] = useState("ALL");
 
     useEffect(() => {
         const loadData = async () => {
@@ -61,6 +63,15 @@ function RepositoryAnalysis() {
         }
     };
 
+    const handleLogout = async () => {
+        try {
+            await logout();
+            window.location.href = "http://localhost:8080/oauth2/authorization/github";
+        } catch (err) {
+            setError("Failed to logout cleanly");
+        }
+    };
+
     useEffect(() => {
 
         if (!job?.id) {
@@ -96,6 +107,24 @@ function RepositoryAnalysis() {
 
     const result = job?.result;
 
+    const countSeverity = (severity) => {
+        if (!result?.issues) {
+            return 0;
+        }
+
+        return result.issues.filter(
+            (issue) =>
+                issue.severity?.toUpperCase() === severity
+        ).length;
+    };
+
+    const filteredIssues = result?.issues?.filter((issue) => {
+        if (issueFilter === "ALL") {
+            return true;
+        }
+        return issue.category?.toUpperCase() === issueFilter;
+    }) || [];
+
     const getSeverityClass = (severity) => {
 
         switch (severity?.toUpperCase()) {
@@ -120,8 +149,17 @@ function RepositoryAnalysis() {
     return (
         <div className="analysis-page">
 
-            <h1 className="analysis-title">AI Code Insight</h1>
-            <p className="repository-name">Repository Analysis</p>
+            <div className="top-navbar">
+                <div>
+                    <h1 className="analysis-title">AI Code Insight</h1>
+                    <p className="repository-name">Intelligent Repository Code Review & Security Analysis</p>
+                </div>
+                {owner && (
+                    <button className="logout-button" onClick={handleLogout}>
+                        Logout ({owner})
+                    </button>
+                )}
+            </div>
 
             <div className="analysis-form">
                 <div className="form-group">
@@ -213,14 +251,37 @@ function RepositoryAnalysis() {
                     {job.status === "COMPLETED" && result && (
                         <div>
                             <h2 style={{ marginTop: "30px" }}>
-                                Analysis Result for {result.repository}
+                                Analysis Result for {result.owner ? `${result.owner}/` : ""}{result.repository}
                             </h2>
+
+                            {result.branch && (
+                                <p style={{ color: "#666", marginTop: "-10px", marginBottom: "20px" }}>
+                                    Branch: <strong>{result.branch}</strong> &bull; Files Analyzed: <strong>{result.filesAnalyzed}</strong>
+                                </p>
+                            )}
 
                             <div className="score-card">
                                 <h2>Code Quality Score</h2>
                                 <div className="score">
                                     {result.score}/100
                                 </div>
+                            </div>
+
+                            <div className="reanalyze-container">
+                                <button
+                                    className="analyze-button"
+                                    onClick={() => {
+                                        const confirmed = window.confirm(
+                                            "Do you want to analyze this repository again?"
+                                        );
+                                        if (confirmed) {
+                                            handleAnalyze();
+                                        }
+                                    }}
+                                    disabled={loading}
+                                >
+                                    {loading ? "Starting..." : "Re-analyze Repository"}
+                                </button>
                             </div>
 
                             <div className="metrics">
@@ -253,6 +314,39 @@ function RepositoryAnalysis() {
                                 </div>
                             </div>
 
+                            <div className="severity-summary">
+                                <h2>Severity Summary</h2>
+                                <div className="severity-metrics">
+                                    <div className="severity-card">
+                                        <h3>Critical</h3>
+                                        <div className="metric-number">
+                                            {countSeverity("CRITICAL")}
+                                        </div>
+                                    </div>
+
+                                    <div className="severity-card">
+                                        <h3>High</h3>
+                                        <div className="metric-number">
+                                            {countSeverity("HIGH")}
+                                        </div>
+                                    </div>
+
+                                    <div className="severity-card">
+                                        <h3>Medium</h3>
+                                        <div className="metric-number">
+                                            {countSeverity("MEDIUM")}
+                                        </div>
+                                    </div>
+
+                                    <div className="severity-card">
+                                        <h3>Low</h3>
+                                        <div className="metric-number">
+                                            {countSeverity("LOW")}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div className="summary-section">
                                 <h2>Analysis Summary</h2>
                                 <p>
@@ -260,7 +354,8 @@ function RepositoryAnalysis() {
                                     <strong>
                                         {result.issues?.length || 0}
                                     </strong>{" "}
-                                    potential issues.
+                                    potential issues across{" "}
+                                    <strong>{result.filesAnalyzed || "all"}</strong> files.
                                 </p>
                                 <p>
                                     Overall code quality score:{" "}
@@ -268,10 +363,43 @@ function RepositoryAnalysis() {
                                 </p>
                             </div>
 
-                            <h2>Issues</h2>
+                            <h2>Issues ({filteredIssues.length})</h2>
 
-                            {result.issues && result.issues.length > 0 ? (
-                                result.issues.map((issue, index) => (
+                            <div className="issue-filters">
+                                <button
+                                    onClick={() => setIssueFilter("ALL")}
+                                    className={issueFilter === "ALL" ? "active-filter" : ""}
+                                >
+                                    All ({result.issues?.length || 0})
+                                </button>
+                                <button
+                                    onClick={() => setIssueFilter("BUG")}
+                                    className={issueFilter === "BUG" ? "active-filter" : ""}
+                                >
+                                    Bugs ({result.bugs || 0})
+                                </button>
+                                <button
+                                    onClick={() => setIssueFilter("SECURITY")}
+                                    className={issueFilter === "SECURITY" ? "active-filter" : ""}
+                                >
+                                    Security ({result.security || 0})
+                                </button>
+                                <button
+                                    onClick={() => setIssueFilter("PERFORMANCE")}
+                                    className={issueFilter === "PERFORMANCE" ? "active-filter" : ""}
+                                >
+                                    Performance ({result.performance || 0})
+                                </button>
+                                <button
+                                    onClick={() => setIssueFilter("CODE_QUALITY")}
+                                    className={issueFilter === "CODE_QUALITY" ? "active-filter" : ""}
+                                >
+                                    Code Quality ({result.codeQuality || 0})
+                                </button>
+                            </div>
+
+                            {filteredIssues.length > 0 ? (
+                                filteredIssues.map((issue, index) => (
                                     <div className="issue-card" key={index}>
                                         <div className="issue-header">
                                             <div>
@@ -290,16 +418,14 @@ function RepositoryAnalysis() {
                                         </div>
 
                                         <p className="issue-info">
-                                            <strong>File:</strong> {issue.file}
+                                            <strong>File:</strong> {issue.file} {issue.line ? `(Line ${issue.line})` : ""}
                                         </p>
 
-                                        <p className="issue-info">
-                                            <strong>Line:</strong> {issue.line}
-                                        </p>
-
-                                        <p className="issue-info">
-                                            <strong>Confidence:</strong> {issue.confidence}
-                                        </p>
+                                        {issue.confidence && (
+                                            <p className="issue-info">
+                                                <strong>Confidence:</strong> {issue.confidence}
+                                            </p>
+                                        )}
 
                                         <p className="issue-info">
                                             <strong>Problem:</strong> {issue.problem}
@@ -312,10 +438,9 @@ function RepositoryAnalysis() {
                                 ))
                             ) : (
                                 <div className="summary-section">
-                                    <h3>No Issues Found</h3>
+                                    <h3>No Matching Issues</h3>
                                     <p>
-                                        The AI did not identify any significant
-                                        problems in the analyzed code.
+                                        No issues were found in this category.
                                     </p>
                                 </div>
                             )}

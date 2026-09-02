@@ -1,11 +1,16 @@
 package com.ajay.githubaicodeinsight.controller;
 
 import com.ajay.githubaicodeinsight.service.GitHubRepositoryService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
@@ -39,5 +44,22 @@ public class UserController {
                 authorizedClient.getAccessToken().getTokenValue();
 
         return gitHubRepositoryService.getCurrentUser(accessToken);
+    }
+
+    @PostMapping("/api/auth/logout")
+    public ResponseEntity<Void> logout(
+            HttpServletRequest request,
+            HttpServletResponse response) {
+
+        SecurityContextLogoutHandler logoutHandler =
+                new SecurityContextLogoutHandler();
+
+        logoutHandler.logout(
+                request,
+                response,
+                SecurityContextHolder.getContext().getAuthentication()
+        );
+
+        return ResponseEntity.ok().build();
     }
 }

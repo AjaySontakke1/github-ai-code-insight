@@ -114,7 +114,7 @@ public class AIAnalysisService {
         List<List<CodeFile>> batches =
                 createBatches(
                         sourceFiles,
-                        10
+                        40000
                 );
 
         List<IssueDto> allIssues =
@@ -155,6 +155,9 @@ public class AIAnalysisService {
 
         return new AnalysisResponse(
                 repository.getName(),
+                owner,
+                repository.getDefaultBranch(),
+                sourceFiles.size(),
                 score,
                 uniqueIssues,
                 bugs,
@@ -254,21 +257,42 @@ public class AIAnalysisService {
 
     private List<List<CodeFile>> createBatches(
             List<CodeFile> files,
-            int batchSize) {
+            int maxCharacters) {
 
         List<List<CodeFile>> batches = new ArrayList<>();
 
-        for (int i = 0; i < files.size(); i += batchSize) {
+        List<CodeFile> currentBatch = new ArrayList<>();
 
-            int end =
-                    Math.min(
-                            i + batchSize,
-                            files.size()
-                    );
+        int currentCharacters = 0;
 
-            batches.add(
-                    files.subList(i, end)
-            );
+        for (CodeFile file : files) {
+
+            int fileCharacters =
+                    file.getContent() == null
+                            ? 0
+                            : file.getContent().length();
+
+            /*
+             * If adding this file would make the batch too large,
+             * finish the current batch first.
+             */
+            if (!currentBatch.isEmpty()
+                    && currentCharacters + fileCharacters > maxCharacters) {
+
+                batches.add(currentBatch);
+
+                currentBatch = new ArrayList<>();
+
+                currentCharacters = 0;
+            }
+
+            currentBatch.add(file);
+
+            currentCharacters += fileCharacters;
+        }
+
+        if (!currentBatch.isEmpty()) {
+            batches.add(currentBatch);
         }
 
         return batches;
@@ -299,50 +323,81 @@ public class AIAnalysisService {
         StringBuilder prompt = new StringBuilder();
 
         prompt.append("""
-                You are an expert software code reviewer.
+                You are an expert Java and Spring Boot code reviewer.
 
-                Analyze the following source code carefully.
+                Review the source files provided below.
 
-                Your job is to identify REAL and IMPORTANT problems only.
+                Your goal is to find real, actionable problems.
 
-                Analyze these categories:
+                CHECK THESE AREAS:
 
                 1. BUG
+                - Null pointer risks
+                - Incorrect conditions
+                - Incorrect exception handling
+                - Logic errors
+                - Incorrect API usage
+
                 2. SECURITY
+                - Hardcoded secrets
+                - Authentication problems
+                - Authorization problems
+                - Unsafe user input
+                - Sensitive data exposure
+                - Insecure configuration
+
                 3. PERFORMANCE
+                - Unnecessary database/API calls
+                - Inefficient loops
+                - Repeated expensive operations
+                - Unnecessary object creation
+                - Poor collection usage
+
                 4. CODE_QUALITY
+                - Very duplicated code
+                - Poor naming
+                - Large or overly complex methods
+                - Bad separation of responsibilities
+                - Poor exception handling
+                - Maintainability problems
 
-                Rules:
+                IMPORTANT RULES:
 
-                - Analyze ONLY the code provided below.
-                - Do not invent files, classes, methods, or problems.
-                - Do not report something merely because it could theoretically be improved.
-                - Report a problem only when there is reasonable evidence in the code.
-                - Give the exact file path.
-                - Give the approximate line number where the problem occurs.
-                - Give severity as CRITICAL, HIGH, MEDIUM, or LOW.
-                - Give confidence as HIGH, MEDIUM, or LOW.
-                - Keep the problem explanation simple and specific.
-                - Give a practical suggestion to fix the problem.
-                - If there are no issues, return an empty issues array.
-                - Return ONLY valid JSON.
-                - Do NOT use Markdown.
-                - Do NOT wrap the JSON inside ```json.
+                - Analyze ONLY the files provided.
+                - Do not invent code that is not present.
+                - Do not report theoretical problems without evidence.
+                - Do not report normal coding choices as problems.
+                - Prefer fewer accurate issues over many false positives.
+                - Every issue must point to a specific file.
+                - Every issue must include an approximate line number.
+                - Severity must be one of:
+                  CRITICAL, HIGH, MEDIUM, LOW.
+                - Confidence must be one of:
+                  HIGH, MEDIUM, LOW.
+                - Explain the problem in simple language.
+                - Give a practical fix.
+                - Do not generate duplicate issues for the same problem.
 
-                JSON format:
+                RETURN ONLY JSON.
+
+                Do NOT use Markdown.
+                Do NOT use ```json.
+                Do NOT add explanations outside the JSON.
+
+                Use exactly this structure:
 
                 {
-                  "repository": "repository name",
+                  "repository": "",
                   "score": 0,
                   "issues": [
                     {
-                      "file": "src/example.java",
-                      "line": 10,
-                      "severity": "HIGH",
-                      "category": "SECURITY",
-                      "confidence": "HIGH",
-                      "problem": "Short explanation of the problem",
-                      "suggestion": "Practical suggestion to fix it"
+                      "file": "",
+                      "line": 0,
+                      "severity": "",
+                      "category": "",
+                      "confidence": "",
+                      "problem": "",
+                      "suggestion": ""
                     }
                   ],
                   "bugs": 0,
@@ -351,11 +406,10 @@ public class AIAnalysisService {
                   "codeQuality": 0
                 }
 
-                Important:
-                The score will be calculated by the application.
-                Do not try to calculate the final score yourself.
+                The application calculates the final score.
+                Do not calculate the score yourself.
 
-                Code to analyze:
+                SOURCE FILES:
 
                 """);
 
