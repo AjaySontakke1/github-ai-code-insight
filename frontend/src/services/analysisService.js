@@ -57,3 +57,20 @@ export async function getRepositories() {
 
     return response.json();
 }
+
+export async function getCurrentUser() {
+
+    const response = await fetch(
+        `${API_BASE_URL}/api/github/me`,
+        {
+            method: "GET",
+            credentials: "include"
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Failed to fetch current user");
+    }
+
+    return response.json();
+}

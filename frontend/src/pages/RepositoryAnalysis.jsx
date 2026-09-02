@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import {
     startAnalysis,
     getAnalysis,
-    getRepositories
+    getRepositories,
+    getCurrentUser
 } from "../services/analysisService";
 import "./RepositoryAnalysis.css";
 
 function RepositoryAnalysis() {
 
-    const [owner, setOwner] = useState("AjaySontakke1");
+    const [owner, setOwner] = useState("");
     const [repo, setRepo] = useState("");
     const [repositories, setRepositories] = useState([]);
     const [loadingRepositories, setLoadingRepositories] = useState(true);
@@ -18,30 +19,25 @@ function RepositoryAnalysis() {
     const [error, setError] = useState("");
 
     useEffect(() => {
-        const loadRepositories = async () => {
+        const loadData = async () => {
             try {
+                const user = await getCurrentUser();
+                setOwner(user.login);
+
                 const data = await getRepositories();
                 setRepositories(data);
 
-                // Auto-select first repository if available
                 if (data && data.length > 0) {
-                    const firstRepo = data[0];
-                    setRepo(firstRepo.name);
-                    if (firstRepo.owner?.login) {
-                        setOwner(firstRepo.owner.login);
-                    } else if (firstRepo.full_name) {
-                        const parts = firstRepo.full_name.split("/");
-                        if (parts.length > 0) setOwner(parts[0]);
-                    }
+                    setRepo(data[0].name);
                 }
             } catch (err) {
-                setError("Failed to load repositories");
+                setError("Failed to load GitHub data");
             } finally {
                 setLoadingRepositories(false);
             }
         };
 
-        loadRepositories();
+        loadData();
     }, []);
 
     const handleAnalyze = async () => {
@@ -141,11 +137,11 @@ function RepositoryAnalysis() {
 
             <div className="analysis-form">
                 <div className="form-group">
-                    <label>Owner</label>
+                    <label>GitHub User</label>
                     <input
                         value={owner}
-                        onChange={(e) => setOwner(e.target.value)}
-                        placeholder="e.g. AjaySontakke1"
+                        readOnly
+                        placeholder="Loading username..."
                     />
                 </div>
 

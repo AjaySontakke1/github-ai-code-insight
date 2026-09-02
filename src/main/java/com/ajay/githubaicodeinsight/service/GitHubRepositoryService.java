@@ -22,6 +22,26 @@ public class GitHubRepositoryService {
         this.restClient = restClientBuilder.build();
     }
 
+    public Map<String, Object> getCurrentUser(String accessToken) {
+
+        RestClient restClient = RestClient.builder()
+                .baseUrl("https://api.github.com")
+                .defaultHeader(
+                        "Authorization",
+                        "Bearer " + accessToken
+                )
+                .defaultHeader(
+                        "Accept",
+                        "application/vnd.github+json"
+                )
+                .build();
+
+        return restClient.get()
+                .uri("/user")
+                .retrieve()
+                .body(new ParameterizedTypeReference<>() {});
+    }
+
     public List<Map<String, Object>> getUserRepositories(String accessToken) {
 
         RestClient restClient = RestClient.builder()
