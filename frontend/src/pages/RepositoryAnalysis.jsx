@@ -253,6 +253,21 @@ function RepositoryAnalysis() {
                                 </div>
                             </div>
 
+                            <div className="summary-section">
+                                <h2>Analysis Summary</h2>
+                                <p>
+                                    The AI analyzed the repository and found{" "}
+                                    <strong>
+                                        {result.issues?.length || 0}
+                                    </strong>{" "}
+                                    potential issues.
+                                </p>
+                                <p>
+                                    Overall code quality score:{" "}
+                                    <strong>{result.score}/100</strong>
+                                </p>
+                            </div>
+
                             <h2>Issues</h2>
 
                             {result.issues && result.issues.length > 0 ? (
@@ -275,7 +290,11 @@ function RepositoryAnalysis() {
                                         </div>
 
                                         <p className="issue-info">
-                                            <strong>File:</strong> {issue.file} {issue.line ? `(Line ${issue.line})` : ""}
+                                            <strong>File:</strong> {issue.file}
+                                        </p>
+
+                                        <p className="issue-info">
+                                            <strong>Line:</strong> {issue.line}
                                         </p>
 
                                         <p className="issue-info">
@@ -292,7 +311,13 @@ function RepositoryAnalysis() {
                                     </div>
                                 ))
                             ) : (
-                                <p>No issues detected.</p>
+                                <div className="summary-section">
+                                    <h3>No Issues Found</h3>
+                                    <p>
+                                        The AI did not identify any significant
+                                        problems in the analyzed code.
+                                    </p>
+                                </div>
                             )}
                         </div>
                     )}
