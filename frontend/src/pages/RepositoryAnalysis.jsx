@@ -27,7 +27,7 @@ function RepositoryAnalysis() {
                 const data = await getRepositories();
                 setRepositories(data);
             } catch (err) {
-                setError("Failed to load GitHub data");
+                setError(err.message || "Failed to load GitHub data");
             } finally {
                 setLoadingRepositories(false);
             }
@@ -53,7 +53,7 @@ function RepositoryAnalysis() {
 
         } catch (err) {
 
-            setError("Failed to start analysis");
+            setError(err.message || "Failed to start analysis");
 
         } finally {
 
@@ -84,7 +84,7 @@ function RepositoryAnalysis() {
 
             } catch (err) {
 
-                setError("Failed to get analysis status");
+                setError(err.message || "Failed to get analysis status");
 
             }
 
@@ -174,12 +174,6 @@ function RepositoryAnalysis() {
                         <p>
                             <strong>Status:</strong> {job.status}
                         </p>
-
-                        {job.status === "FAILED" && (
-                            <p className="error-message">
-                                Analysis failed: {job.error}
-                            </p>
-                        )}
                     </div>
 
                     {job.status === "STARTED" && (
@@ -198,6 +192,21 @@ function RepositoryAnalysis() {
                             <div className="progress-bar-container">
                                 <div className="progress-bar"></div>
                             </div>
+                        </div>
+                    )}
+
+                    {job.status === "FAILED" && (
+                        <div className="error-box">
+                            <h2>Analysis Failed</h2>
+                            <p>
+                                {job.error || "Something went wrong during analysis."}
+                            </p>
+                            <button
+                                className="analyze-button"
+                                onClick={handleAnalyze}
+                            >
+                                Try Again
+                            </button>
                         </div>
                     )}
 

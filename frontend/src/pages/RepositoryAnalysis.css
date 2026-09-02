@@ -59,6 +59,24 @@
     background: #f5f5f5;
 }
 
+.error-box {
+    padding: 20px;
+    margin: 20px 0;
+    border: 1px solid #fecaca;
+    border-radius: 10px;
+    background: #fef2f2;
+    color: #991b1b;
+}
+
+.error-box h2 {
+    margin-top: 0;
+    color: #dc2626;
+}
+
+.error-box button {
+    margin-top: 10px;
+}
+
 .progress-box {
     padding: 25px;
     margin: 25px 0;

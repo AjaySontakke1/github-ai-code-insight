@@ -72,7 +72,14 @@ public class AIAnalysisService {
         } catch (Exception e) {
 
             job.setStatus(AnalysisStatus.FAILED);
-            job.setError(e.getMessage());
+
+            String message = e.getMessage();
+
+            if (message == null || message.isBlank()) {
+                message = "Analysis failed unexpectedly.";
+            }
+
+            job.setError(message);
         }
     }
 
