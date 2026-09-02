@@ -11,6 +11,7 @@ import org.springframework.web.client.RestClient;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class GitHubRepositoryService {
@@ -19,6 +20,20 @@ public class GitHubRepositoryService {
 
     public GitHubRepositoryService(RestClient.Builder restClientBuilder) {
         this.restClient = restClientBuilder.build();
+    }
+
+    public List<Map<String, Object>> getUserRepositories(String accessToken) {
+
+        RestClient restClient = RestClient.builder()
+                .baseUrl("https://api.github.com")
+                .defaultHeader("Authorization", "Bearer " + accessToken)
+                .defaultHeader("Accept", "application/vnd.github+json")
+                .build();
+
+        return restClient.get()
+                .uri("/user/repos?sort=updated&per_page=100")
+                .retrieve()
+                .body(new ParameterizedTypeReference<>() {});
     }
 
     public RepositoryPageResponse getRepositories(
