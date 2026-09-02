@@ -1,20 +1,54 @@
 import { useEffect, useState } from "react";
 import {
     startAnalysis,
-    getAnalysis
+    getAnalysis,
+    getRepositories
 } from "../services/analysisService";
 import "./RepositoryAnalysis.css";
 
 function RepositoryAnalysis() {
 
     const [owner, setOwner] = useState("AjaySontakke1");
-    const [repo, setRepo] = useState("CampusSync");
+    const [repo, setRepo] = useState("");
+    const [repositories, setRepositories] = useState([]);
+    const [loadingRepositories, setLoadingRepositories] = useState(true);
 
     const [loading, setLoading] = useState(false);
     const [job, setJob] = useState(null);
     const [error, setError] = useState("");
 
+    useEffect(() => {
+        const loadRepositories = async () => {
+            try {
+                const data = await getRepositories();
+                setRepositories(data);
+
+                // Auto-select first repository if available
+                if (data && data.length > 0) {
+                    const firstRepo = data[0];
+                    setRepo(firstRepo.name);
+                    if (firstRepo.owner?.login) {
+                        setOwner(firstRepo.owner.login);
+                    } else if (firstRepo.full_name) {
+                        const parts = firstRepo.full_name.split("/");
+                        if (parts.length > 0) setOwner(parts[0]);
+                    }
+                }
+            } catch (err) {
+                setError("Failed to load repositories");
+            } finally {
+                setLoadingRepositories(false);
+            }
+        };
+
+        loadRepositories();
+    }, []);
+
     const handleAnalyze = async () => {
+        if (!repo) {
+            setError("Please select a repository to analyze");
+            return;
+        }
 
         try {
             setLoading(true);
@@ -84,6 +118,21 @@ function RepositoryAnalysis() {
         }
     };
 
+    const handleRepoChange = (e) => {
+        const selectedRepoName = e.target.value;
+        setRepo(selectedRepoName);
+
+        const selectedRepo = repositories.find((r) => r.name === selectedRepoName);
+        if (selectedRepo) {
+            if (selectedRepo.owner?.login) {
+                setOwner(selectedRepo.owner.login);
+            } else if (selectedRepo.full_name) {
+                const parts = selectedRepo.full_name.split("/");
+                if (parts.length > 0) setOwner(parts[0]);
+            }
+        }
+    };
+
     return (
         <div className="analysis-page">
 
@@ -102,17 +151,29 @@ function RepositoryAnalysis() {
 
                 <div className="form-group">
                     <label>Repository</label>
-                    <input
+                    <select
                         value={repo}
-                        onChange={(e) => setRepo(e.target.value)}
-                        placeholder="e.g. CampusSync"
-                    />
+                        onChange={handleRepoChange}
+                        disabled={loadingRepositories}
+                    >
+                        <option value="">
+                            {loadingRepositories ? "Loading repositories..." : "Select Repository"}
+                        </option>
+                        {repositories.map((repository) => (
+                            <option
+                                key={repository.id || repository.full_name || repository.name}
+                                value={repository.name}
+                            >
+                                {repository.full_name || repository.name}
+                            </option>
+                        ))}
+                    </select>
                 </div>
 
                 <button
                     className="analyze-button"
                     onClick={handleAnalyze}
-                    disabled={loading}
+                    disabled={loading || !repo}
                 >
                     {loading ? "Starting..." : "Analyze Repository"}
                 </button>

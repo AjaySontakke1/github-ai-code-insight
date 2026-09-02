@@ -27,11 +27,14 @@
     gap: 6px;
 }
 
-.form-group input {
+.form-group input,
+.form-group select {
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 6px;
     min-width: 220px;
+    font-size: 14px;
+    background-color: #fff;
 }
 
 .analyze-button {

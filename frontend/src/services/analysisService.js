@@ -40,3 +40,20 @@ export async function getAnalysis(id) {
 
     return response.json();
 }
+
+export async function getRepositories() {
+
+    const response = await fetch(
+        `${API_BASE_URL}/api/github/repositories`,
+        {
+            method: "GET",
+            credentials: "include"
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Failed to fetch repositories");
+    }
+
+    return response.json();
+}
