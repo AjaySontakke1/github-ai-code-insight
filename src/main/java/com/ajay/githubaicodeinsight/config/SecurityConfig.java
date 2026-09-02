@@ -22,13 +22,7 @@ public class SecurityConfig {
             .cors(Customizer.withDefaults())
             .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**", "/mcp/**"))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers(
-                    "/",
-                    "/login/**",
-                    "/oauth2/**",
-                    "/api/health",
-                    "/api/ai/test"
-                ).permitAll()
+                .requestMatchers("/", "/login/**", "/oauth2/**", "/api/health").permitAll()
                 .requestMatchers(
                     "/api/github/**",
                     "/api/ai/**",
