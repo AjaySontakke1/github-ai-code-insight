@@ -103,28 +103,46 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 10px;
 }
 
 .severity {
+    display: inline-block;
     padding: 5px 10px;
     border-radius: 5px;
     font-size: 12px;
     font-weight: bold;
 }
 
+.severity-critical {
+    background: #7f1d1d;
+    color: white;
+}
+
 .severity-high {
-    background: #fee2e2;
-    color: #dc2626;
+    background: #dc2626;
+    color: white;
 }
 
 .severity-medium {
-    background: #fef3c7;
-    color: #d97706;
+    background: #f59e0b;
+    color: white;
 }
 
 .severity-low {
-    background: #dcfce7;
-    color: #16a34a;
+    background: #16a34a;
+    color: white;
+}
+
+.category-badge {
+    display: inline-block;
+    padding: 5px 10px;
+    margin-left: 8px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: bold;
+    background: #e5e7eb;
+    color: #374151;
 }
 
 .issue-info {

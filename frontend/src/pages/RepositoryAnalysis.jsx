@@ -97,16 +97,23 @@ function RepositoryAnalysis() {
     const result = job?.result;
 
     const getSeverityClass = (severity) => {
+
         switch (severity?.toUpperCase()) {
-            case "HIGH":
+
             case "CRITICAL":
-                return "severity severity-high";
+                return "severity-critical";
+
+            case "HIGH":
+                return "severity-high";
+
             case "MEDIUM":
-                return "severity severity-medium";
+                return "severity-medium";
+
             case "LOW":
-                return "severity severity-low";
+                return "severity-low";
+
             default:
-                return "severity";
+                return "";
         }
     };
 
@@ -228,21 +235,28 @@ function RepositoryAnalysis() {
                                 result.issues.map((issue, index) => (
                                     <div className="issue-card" key={index}>
                                         <div className="issue-header">
-                                            <h3>{issue.category || "Issue"}</h3>
-                                            <span className={getSeverityClass(issue.severity)}>
-                                                {issue.severity}
-                                            </span>
+                                            <div>
+                                                <span
+                                                    className={`severity ${getSeverityClass(
+                                                        issue.severity
+                                                    )}`}
+                                                >
+                                                    {issue.severity}
+                                                </span>
+
+                                                <span className="category-badge">
+                                                    {issue.category}
+                                                </span>
+                                            </div>
                                         </div>
 
                                         <p className="issue-info">
                                             <strong>File:</strong> {issue.file} {issue.line ? `(Line ${issue.line})` : ""}
                                         </p>
 
-                                        {issue.confidence && (
-                                            <p className="issue-info">
-                                                <strong>Confidence:</strong> {issue.confidence}
-                                            </p>
-                                        )}
+                                        <p className="issue-info">
+                                            <strong>Confidence:</strong> {issue.confidence}
+                                        </p>
 
                                         <p className="issue-info">
                                             <strong>Problem:</strong> {issue.problem}
