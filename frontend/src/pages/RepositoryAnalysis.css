@@ -1,0 +1,146 @@
+.analysis-page {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.analysis-title {
+    margin-bottom: 5px;
+}
+
+.repository-name {
+    color: #666;
+    margin-bottom: 30px;
+}
+
+.analysis-form {
+    display: flex;
+    gap: 15px;
+    align-items: flex-end;
+    margin-bottom: 30px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    min-width: 220px;
+}
+
+.analyze-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    background-color: #2563eb;
+    color: white;
+}
+
+.analyze-button:disabled {
+    cursor: not-allowed;
+    background-color: #94a3b8;
+}
+
+.status-box {
+    padding: 15px;
+    margin: 20px 0;
+    border-radius: 8px;
+    background: #f5f5f5;
+}
+
+.score-card {
+    text-align: center;
+    padding: 30px;
+    margin: 25px 0;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+}
+
+.score {
+    font-size: 48px;
+    font-weight: bold;
+    color: #2563eb;
+}
+
+.metrics {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.metric-card {
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.metric-number {
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.issue-card {
+    padding: 20px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+}
+
+.issue-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.severity {
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.severity-high {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.severity-medium {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+.severity-low {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.issue-info {
+    margin: 8px 0;
+}
+
+.error-message {
+    margin-top: 15px;
+    color: #dc2626;
+}
+
+@media (max-width: 800px) {
+
+    .metrics {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .analysis-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
