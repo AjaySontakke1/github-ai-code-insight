@@ -50,10 +50,10 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of(
-            "https://ai-code-insight-frontend.onrender.com",
             "http://localhost:5173",
             "http://127.0.0.1:5173",
-            "http://localhost:3000"
+            "http://localhost:3000",
+            "https://ai-code-insight-frontend.onrender.com"
         ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"));
         configuration.setAllowedHeaders(List.of("*"));
