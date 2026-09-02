@@ -74,3 +74,20 @@ export async function getCurrentUser() {
 
     return response.json();
 }
+
+export async function getAnalysisHistory() {
+
+    const response = await fetch(
+        `${API_BASE_URL}/api/ai/history`,
+        {
+            method: "GET",
+            credentials: "include"
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Failed to fetch analysis history");
+    }
+
+    return response.json();
+}

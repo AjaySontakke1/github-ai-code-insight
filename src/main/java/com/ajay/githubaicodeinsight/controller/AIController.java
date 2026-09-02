@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -79,6 +80,18 @@ public class AIController {
 
         return analysisJobService.getJob(
                 id,
+                authentication.getName()
+        );
+    }
+
+    @GetMapping("/api/ai/history")
+    public List<AnalysisJob> getHistory() {
+
+        Authentication authentication =
+                SecurityContextHolder.getContext()
+                        .getAuthentication();
+
+        return analysisJobService.getUserJobs(
                 authentication.getName()
         );
     }
