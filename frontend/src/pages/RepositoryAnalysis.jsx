@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import {
+    API_BASE_URL,
     startAnalysis,
     getAnalysis,
     getRepositories,
@@ -169,7 +170,7 @@ function RepositoryAnalysis() {
                 </p>
 
                 <a 
-                    href="http://localhost:8080/oauth2/authorization/github" 
+                    href={`${API_BASE_URL}/oauth2/authorization/github`} 
                     className="github-login-btn"
                 >
                     <svg viewBox="0 0 24 24">
