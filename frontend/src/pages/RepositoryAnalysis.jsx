@@ -26,6 +26,11 @@ function RepositoryAnalysis() {
         checkAuthAndLoadData();
     }, []);
 
+    const handleLogin = () => {
+        window.location.href =
+            "https://github-ai-code-insight.onrender.com/oauth2/authorization/github";
+    };
+
     const checkAuthAndLoadData = async () => {
         try {
             setAuthStatus("checking");
@@ -171,6 +176,7 @@ function RepositoryAnalysis() {
 
                 <a 
                     href={`${API_BASE_URL}/oauth2/authorization/github`} 
+                    onClick={handleLogin}
                     className="github-login-btn"
                 >
                     <svg viewBox="0 0 24 24">
