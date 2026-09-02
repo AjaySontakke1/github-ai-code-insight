@@ -26,10 +26,6 @@ function RepositoryAnalysis() {
 
                 const data = await getRepositories();
                 setRepositories(data);
-
-                if (data && data.length > 0) {
-                    setRepo(data[0].name);
-                }
             } catch (err) {
                 setError("Failed to load GitHub data");
             } finally {
@@ -41,8 +37,8 @@ function RepositoryAnalysis() {
     }, []);
 
     const handleAnalyze = async () => {
-        if (!repo) {
-            setError("Please select a repository to analyze");
+        if (!owner || !repo) {
+            setError("Please select a repository");
             return;
         }
 
@@ -114,21 +110,6 @@ function RepositoryAnalysis() {
         }
     };
 
-    const handleRepoChange = (e) => {
-        const selectedRepoName = e.target.value;
-        setRepo(selectedRepoName);
-
-        const selectedRepo = repositories.find((r) => r.name === selectedRepoName);
-        if (selectedRepo) {
-            if (selectedRepo.owner?.login) {
-                setOwner(selectedRepo.owner.login);
-            } else if (selectedRepo.full_name) {
-                const parts = selectedRepo.full_name.split("/");
-                if (parts.length > 0) setOwner(parts[0]);
-            }
-        }
-    };
-
     return (
         <div className="analysis-page">
 
@@ -149,7 +130,7 @@ function RepositoryAnalysis() {
                     <label>Repository</label>
                     <select
                         value={repo}
-                        onChange={handleRepoChange}
+                        onChange={(e) => setRepo(e.target.value)}
                         disabled={loadingRepositories}
                     >
                         <option value="">
@@ -160,7 +141,7 @@ function RepositoryAnalysis() {
                                 key={repository.id || repository.full_name || repository.name}
                                 value={repository.name}
                             >
-                                {repository.full_name || repository.name}
+                                {repository.full_name}
                             </option>
                         ))}
                     </select>
