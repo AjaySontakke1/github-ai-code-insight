@@ -1,5 +1,17 @@
 # AI Code Insight
 
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://ai-code-insight-frontend.onrender.com)
+[![Backend API](https://img.shields.io/badge/Backend_API-Live-009688?style=for-the-badge&logo=spring&logoColor=white)](https://github-ai-code-insight.onrender.com/api/health)
+[![Spring Boot](https://img.shields.io/badge/Spring_Boot-4.1.1-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)](https://spring.io)
+[![Google Gemini](https://img.shields.io/badge/Google_Gemini-3.5_Flash-8E75B2?style=for-the-badge&logo=google&logoColor=white)](https://aistudio.google.com)
+[![React 19](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
+
+> 🌐 **Live Frontend Application**: [https://ai-code-insight-frontend.onrender.com](https://ai-code-insight-frontend.onrender.com)  
+> ⚡ **Live Backend Web Service**: [https://github-ai-code-insight.onrender.com](https://github-ai-code-insight.onrender.com)  
+> 🩺 **Backend Health Endpoint**: [https://github-ai-code-insight.onrender.com/api/health](https://github-ai-code-insight.onrender.com/api/health)
+
+---
+
 AI Code Insight is an AI-powered code review web application that analyzes GitHub repositories and identifies potential problems in the source code.
 
 The application connects to GitHub using OAuth authentication, retrieves source code from a selected repository, sends the code to Google's Gemini AI through Spring AI, and displays the analysis in an easy-to-understand dashboard.
