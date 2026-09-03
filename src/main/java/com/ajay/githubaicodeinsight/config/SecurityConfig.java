@@ -38,7 +38,7 @@ public class SecurityConfig {
             )
             .oauth2Login(oauth2 -> oauth2
                 .defaultSuccessUrl(
-                    "https://ai-code-insight-frontend.onrender.com",
+                    "https://ai-code-insight-frontend.onrender.com/analysis",
                     true
                 )
             );
